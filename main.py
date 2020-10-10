@@ -5,7 +5,8 @@ import time
 
 from camera_stream import CameraStream
 
-camera_stream = CameraStream('rtsp://192.168.1.119/user=admin_password=_channel=1_stream=0.sdp')
+#camera_stream = CameraStream('rtsp://192.168.1.119/user=admin_password=_channel=1_stream=0.sdp')
+camera_stream = CameraStream(0)
 
 camera_stream.start()
 time.sleep(2)
