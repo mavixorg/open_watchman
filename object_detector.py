@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 
 from object_detection.builders import model_builder
-from object_detection.utils import config_util
+from object_detection.utils import config_util, visualization_utils
 
 class ObjectDetector:
     
@@ -51,10 +51,23 @@ class ObjectDetector:
             category_index[class_id] = {'id': class_id, 'name': class_name}
         return category_index
 
-    def getDetectionsFromImage(self, input_image):
+    def detectAndPlot(self, input_image, score_threshold=0.52):
         """
         input_image: numpy array of uint8 with shape [img_height, img_width, 3]
         (img_height and img_width can be arbitrary).
         Note, however, that input_image will be resized to 640x640 by detector.
         """
-        return self._detect(tf.convert_to_tensor(np.expand_dims(input_image, axis=0), dtype=tf.float32))
+        detections = self._detect(tf.convert_to_tensor(np.expand_dims(input_image, axis=0), dtype=tf.float32))
+        
+        output_image = input_image.copy()
+        
+        visualization_utils.visualize_boxes_and_labels_on_image_array(
+            output_image,
+            detections['detection_boxes'][0].numpy(),
+            detections['detection_classes'][0].numpy().astype(np.uint32) + 1,
+            detections['detection_scores'][0].numpy(),
+            self.category_index,
+            use_normalized_coordinates=True,
+            min_score_thresh=score_threshold)
+        
+        return output_image

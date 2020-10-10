@@ -24,6 +24,7 @@ numpy, opencv-python, pillow, six, protobuf, tensorflow-hub, absl-py, tf-slim, o
 ```
 python single_image_test.py
 ```
+The image with detected boats will be saved in a file "local_output.jpg". Check it out!
 
 6. Set camera stream source in [main.py - line 8](https://github.com/mavixorg/open_watchman/blob/master/main.py#L8).
 It can be equal to:
