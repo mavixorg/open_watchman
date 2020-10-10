@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import os
-
+import ast
 import numpy as np
 import tensorflow as tf
 
@@ -10,8 +10,10 @@ from object_detection.utils import config_util
 
 class ObjectDetector:
     
-    def __init__(self, model_dir, checkpoint_id=0):
+    def __init__(self, categories_path, model_dir, checkpoint_id=0):
         
+        self.category_index = self._load_category_index(categories_path)
+
         # Loading pipeline config
         model_config_file = os.path.join(model_dir, 'pipeline.config')
         checkpoint_path = os.path.join(model_dir, 'checkpoint/ckpt-' + str(checkpoint_id))
@@ -40,6 +42,14 @@ class ObjectDetector:
             prediction_dict = self._detection_model.predict(preprocessed_image, shapes)
             return self._detection_model.postprocess(prediction_dict, shapes)
         return detectFn
+
+    def _load_category_index(self, path):
+        f = open(path, "r")
+        classes_dict = ast.literal_eval(f.read())
+        category_index = {}
+        for class_id, class_name in classes_dict.items():
+            category_index[class_id] = {'id': class_id, 'name': class_name}
+        return category_index
 
     def getDetectionsFromImage(self, input_image):
         """
