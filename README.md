@@ -31,7 +31,7 @@ It can be equal to:
 * an integer camera index (eg 0 for built-in laptop camera);
 * video file path (if loading from);
 * network stream URL;
-* etc. check [OpenCV documentation](https://docs.opencv.org/4.4.0/d8/dfe/classcv_1_1VideoCapture.html#ac4107fb146a762454a8a87715d9b7c96) for more source options options.
+* etc. check [OpenCV documentation](https://docs.opencv.org/4.4.0/d8/dfe/classcv_1_1VideoCapture.html#ac4107fb146a762454a8a87715d9b7c96) for more source options.
 
 7. Run 
 ```
