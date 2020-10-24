@@ -2,10 +2,9 @@
 
 import os
 import ast
+import cv2
 import numpy as np
 import tensorflow as tf
-
-from object_detection.utils import visualization_utils
 
 class ObjectDetector:
     
@@ -33,14 +32,27 @@ class ObjectDetector:
         detections = self._detect(tf.convert_to_tensor(np.expand_dims(input_image, axis=0), dtype=tf.uint8))
         
         output_image = input_image.copy()
-        
-        visualization_utils.visualize_boxes_and_labels_on_image_array(
-            output_image,
-            detections['detection_boxes'][0].numpy(),
-            detections['detection_classes'][0].numpy().astype(np.uint32),
-            detections['detection_scores'][0].numpy(),
-            self.category_index,
-            use_normalized_coordinates=True,
-            min_score_thresh=score_threshold)
+        h, w = output_image.shape[:2]
+
+        bboxes = detections['detection_boxes'][0].numpy()
+        classes = detections['detection_classes'][0].numpy().astype(np.uint32)
+        scores = detections['detection_scores'][0].numpy()
+
+        for detection_id in range(len(scores)):
+            if(scores[detection_id] < score_threshold):
+                continue
+
+            bbox = bboxes[detection_id]
+            bbox_px = [int(x) for x in [bbox[0]*h, bbox[1]*w, bbox[2]*h, bbox[3]*w]]
+            cv2.rectangle(output_image, (bbox_px[1], bbox_px[0]), (bbox_px[3], bbox_px[2]), (0, 255, 0), 3)
+
+            class_id = classes[detection_id]
+            class_name = self.category_index[class_id]["name"]
+
+            annotation = class_name + " " + str(int(scores[detection_id]*100.0)) + "%"
+            cv2.putText(output_image, annotation,
+                (bbox_px[1], bbox_px[0]+10), 
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7, (255, 0, 0), 2, cv2.LINE_AA)
         
         return output_image
