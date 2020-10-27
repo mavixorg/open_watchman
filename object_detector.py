@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
-import os
 import ast
+import os
+import time
+
 import cv2
 import numpy as np
 import tensorflow as tf
@@ -29,6 +31,7 @@ class ObjectDetector:
         (img_height and img_width can be arbitrary).
         Note, however, that input_image will be resized to 640x640 by detector.
         """
+        start_time = time.time()
         detections = self._detect(tf.convert_to_tensor(np.expand_dims(input_image, axis=0), dtype=tf.uint8))
         
         output_image = input_image.copy()
@@ -55,4 +58,10 @@ class ObjectDetector:
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.7, (255, 0, 0), 2, cv2.LINE_AA)
         
+        elapsed_time = time.time() - start_time
+        cv2.putText(output_image, str(elapsed_time)[:5] + " s/frame",
+            (20, 20), 
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7, (0, 255, 0), 2, cv2.LINE_AA)
+
         return output_image
